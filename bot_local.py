@@ -47,6 +47,7 @@ async def play(ctx, url: str):
             
             await ctx.send(f"Now Playing: {song_title}")
             voice.play(discord.FFmpegPCMAudio(song_file))
+            await update_status(song_title)
         except discord.errors.ClientException:
             pass
 
@@ -77,6 +78,7 @@ async def queue_manager(ctx):
     queue_status = status.is_playing()
     if queue_status is False:
         await skip(ctx)
+      
     else:
         pass
 
@@ -102,5 +104,6 @@ async def leave(ctx):
     voice = ctx.voice_client
     await voice.disconnect()
 
-
+async def update_status(song):
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(name={song}))
 client.run(MUSIC_BOT_TOKEN)
