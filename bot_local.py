@@ -36,14 +36,17 @@ def add_song(url: str):
 async def play(ctx, url: str):
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="General")
     status = ctx.voice_client
+    await ctx.message.delete()
     add_song(url=url)
     if status is False or status is None:
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         try:
-            next_song = song_queue.popleft()
-            await ctx.send(f"Now Playing: {next_song.keys()}")
-            voice.play(discord.FFmpegPCMAudio(next_song.values()))
+            song = song_queue.popleft()
+            song_title, song_file = next(iter(song.items()))
+            
+            await ctx.send(f"Now Playing: {song_title}")
+            voice.play(discord.FFmpegPCMAudio(song_file))
         except discord.errors.ClientException:
             pass
 

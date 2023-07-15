@@ -23,21 +23,28 @@ def add_song(url: str):
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        video_info = ydl.extract_info(url=url, download=False)
+        title = video_info.get('title', None)
         ydl.download([url])
 
-    song_queue.append(f"{url[-11:]}.mp3")
+    song_queue.append({title: f"{url[-11:]}.mp3"})
 
 
 @client.command()
 async def play(ctx, url: str):
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="General")
     status = ctx.voice_client
+    await ctx.message.delete()
     add_song(url=url)
     if status is False or status is None:
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         try:
-            voice.play(discord.FFmpegPCMAudio(song_queue.popleft()))
+            song = song_queue.popleft()
+            song_title, song_file = next(iter(song.items()))
+            
+            await ctx.send(f"Now Playing: {song_title}")
+            voice.play(discord.FFmpegPCMAudio(song_file))
         except discord.errors.ClientException:
             pass
 
