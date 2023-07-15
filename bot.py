@@ -103,5 +103,5 @@ async def leave(ctx):
     await voice.disconnect()
 
 async def update_status(song):
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name={song}))
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(name=song))
 client.run(MUSIC_BOT_TOKEN)
