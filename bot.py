@@ -42,9 +42,8 @@ async def play(ctx, url: str):
         try:
             song = song_queue.popleft()
             song_title, song_file = next(iter(song.items()))
-            
-            await ctx.send(f"Now Playing: {song_title}")
             voice.play(discord.FFmpegPCMAudio(song_file))
+            await ctx.send(f"Now Playing: {song_title}")
             await update_status(song_title)
         except discord.errors.ClientException:
             pass
@@ -88,7 +87,10 @@ async def skip(ctx):
 
     if len(song_queue) > 0:
         try:
-            voice.play(discord.FFmpegPCMAudio(song_queue.popleft()))
+            song = song_queue.popleft()
+            song_title, song_file = next(iter(song.items()))
+            voice.play(discord.FFmpegPCMAudio(song_file))
+            await ctx.send(f"Now Playing: {song_title}")
         except discord.errors.ClientException:
             pass
     else:
