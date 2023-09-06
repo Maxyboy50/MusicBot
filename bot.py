@@ -69,12 +69,12 @@ async def resume(ctx):
     voice.resume()
 
 
-@tasks.loop(seconds=0.5)
+@tasks.loop(seconds=5)
 async def queue_manager(ctx):
     status = ctx.voice_client
     queue_status = status.is_playing()
     if queue_status is False:
-        await skip(ctx)
+        await status.stop()
       
     else:
         pass
