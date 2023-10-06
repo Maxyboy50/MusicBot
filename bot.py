@@ -1,15 +1,26 @@
-import discord
-from discord.ext import commands, tasks
-import yt_dlp as youtube_dl
-from collections import deque
 import os
+import discord
+import yt_dlp as youtube_dl
+from dotenv import load_dotenv
+from collections import deque
+from discord.ext import commands, tasks
+from youtubesearchpython import VideosSearch
+load_dotenv(".env")
 
 client = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 song_queue = deque()
 
 MUSIC_BOT_TOKEN = os.getenv("MUSIC_BOT_TOKEN")
 
-def add_song(url: str):
+def search_song(video_title: str) -> str:
+
+
+    videoSearch = VideosSearch(video_title, limit= 1)
+    result = videoSearch.result()
+    return result["result"][0]["link"]
+
+def add_song(song_title: str):
+    video_link = search_song(song_title)
     ydl_opts = {
         "format": "bestaudio/best",
         "postprocessors": [
@@ -19,23 +30,21 @@ def add_song(url: str):
                 "preferredquality": "192",
             }
         ],
-        "outtmpl": f"{url[-11:]}",
+        "outtmpl": f"{video_link[-11:]}",
     }
-
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        video_info = ydl.extract_info(url=url, download=False)
+        video_info = ydl.extract_info(url=video_link, download=False)
         title = video_info.get('title', None)
-        ydl.download([url])
+        ydl.download([video_link])
 
-    song_queue.append({title: f"{url[-11:]}.mp3"})
-
+    song_queue.append({title: f"{video_link[-11:]}.mp3"})
 
 @client.command()
 async def play(ctx, url: str):
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="General")
     status = ctx.voice_client
     await ctx.message.delete()
-    add_song(url=url)
+    add_song(song_title=url)
     if status is False or status is None:
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
