@@ -1,0 +1,8 @@
+services:
+  WillieNeal:
+    container_name: WillieNeal
+    build: . 
+    image: 'musicbot:latest' 
+    env_file:
+      - .env
+

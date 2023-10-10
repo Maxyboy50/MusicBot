@@ -1,11 +1,9 @@
 import os
 import discord
 import yt_dlp as youtube_dl
-from dotenv import load_dotenv
 from collections import deque
 from discord.ext import commands, tasks
 from youtubesearchpython import VideosSearch
-load_dotenv(".env")
 
 client = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 song_queue = deque()
@@ -80,10 +78,10 @@ async def resume(ctx):
 
 @tasks.loop(seconds=5)
 async def queue_manager(ctx):
-    status = ctx.voice_client
-    queue_status = status.is_playing()
+    voice = ctx.voice_client
+    queue_status = voice.is_playing()
     if queue_status is False:
-        await status.stop()
+       voice.stop()
       
     else:
         pass
