@@ -10,15 +10,14 @@ song_queue = deque()
 
 MUSIC_BOT_TOKEN = os.getenv("MUSIC_BOT_TOKEN")
 
+
 def search_song(video_title: str) -> str:
-
-
-    videoSearch = VideosSearch(video_title, limit= 1)
+    videoSearch = VideosSearch(video_title, limit=1)
     result = videoSearch.result()
     return result["result"][0]["link"]
 
+
 def add_song(song_title: str):
-    video_link = search_song(song_title)
     ydl_opts = {
         "format": "bestaudio/best",
         "postprocessors": [
@@ -28,30 +27,38 @@ def add_song(song_title: str):
                 "preferredquality": "192",
             }
         ],
-        "outtmpl": f"{video_link[-11:]}",
+        "outtmpl": f"{song_title[-11:]}",
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        video_info = ydl.extract_info(url=video_link, download=False)
-        title = video_info.get('title', None)
-        ydl.download([video_link])
+        video_info = ydl.extract_info(url=song_title, download=False)
+        title = video_info.get("title", None)
+        ydl.download([song_title])
 
-    song_queue.append({title: f"{video_link[-11:]}.mp3"})
+    song_queue.append({title: {"mp3": f"{song_title[-11:]}.mp3", "link": song_title}})
+
+
+async def play_song(ctx, voice):
+    song = song_queue.popleft()
+    song_title, song_info = next(iter(song.items()))
+    print(song_title, song_info)
+    voice.play(discord.FFmpegPCMAudio(song_info["mp3"]))
+    await ctx.send(f"Now Playing: {song_title}")
+    await ctx.send(song_info["link"])
+    await update_status(song_title)
+
 
 @client.command()
 async def play(ctx, *, url: str):
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="General")
     status = ctx.voice_client
+    video_link = search_song(url)
     await ctx.message.delete()
-    add_song(song_title=url)
+    add_song(song_title=video_link)
     if status is False or status is None:
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         try:
-            song = song_queue.popleft()
-            song_title, song_file = next(iter(song.items()))
-            voice.play(discord.FFmpegPCMAudio(song_file))
-            await ctx.send(f"Now Playing: {song_title}")
-            await update_status(song_title)
+            await play_song(ctx=ctx, voice=voice)
         except discord.errors.ClientException:
             pass
 
@@ -76,13 +83,24 @@ async def resume(ctx):
     voice.resume()
 
 
+@client.command()
+async def queue(ctx):
+    try:
+        await ctx.send("QUEUE\n------------")
+        for i in range(0, len(song_queue)):
+            song = song_queue[i]
+            for song_title in song:
+                await ctx.send(f"Title: {song_title}")
+    except IndexError:
+        await ctx.send("The queue is empty!")
+
+
 @tasks.loop(seconds=5)
 async def queue_manager(ctx):
     voice = ctx.voice_client
     queue_status = voice.is_playing()
     if queue_status is False:
-       voice.stop()
-      
+        await skip(ctx)
     else:
         pass
 
@@ -94,10 +112,7 @@ async def skip(ctx):
 
     if len(song_queue) > 0:
         try:
-            song = song_queue.popleft()
-            song_title, song_file = next(iter(song.items()))
-            voice.play(discord.FFmpegPCMAudio(song_file))
-            await ctx.send(f"Now Playing: {song_title}")
+            await play_song(ctx=ctx, voice=voice)
         except discord.errors.ClientException:
             pass
     else:
@@ -111,6 +126,11 @@ async def leave(ctx):
     voice = ctx.voice_client
     await voice.disconnect()
 
+
 async def update_status(song):
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name=song))
+    await client.change_presence(
+        status=discord.Status.online, activity=discord.Game(name=song)
+    )
+
+
 client.run(MUSIC_BOT_TOKEN)

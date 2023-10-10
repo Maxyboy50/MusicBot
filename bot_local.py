@@ -5,18 +5,20 @@ from dotenv import load_dotenv
 from collections import deque
 from discord.ext import commands, tasks
 from youtubesearchpython import VideosSearch
+
 load_dotenv(".env")
 
 client = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 song_queue = deque()
 
 MUSIC_BOT_TOKEN = os.getenv("MUSIC_BOT_TOKEN")
+
+
 def search_song(video_title: str) -> str:
-
-
-    videoSearch = VideosSearch(video_title, limit= 1)
+    videoSearch = VideosSearch(video_title, limit=1)
     result = videoSearch.result()
     return result["result"][0]["link"]
+
 
 def add_song(song_title: str):
     video_link = search_song(song_title)
@@ -33,7 +35,7 @@ def add_song(song_title: str):
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         video_info = ydl.extract_info(url=video_link, download=False)
-        title = video_info.get('title', None)
+        title = video_info.get("title", None)
         ydl.download([video_link])
 
     song_queue.append({title: f"{video_link[-11:]}.mp3"})
@@ -51,7 +53,7 @@ async def play(ctx, *, url: str):
         try:
             song = song_queue.popleft()
             song_title, song_file = next(iter(song.items()))
-            
+
             await ctx.send(f"Now Playing: {song_title}")
             voice.play(discord.FFmpegPCMAudio(song_file))
             await update_status(song_title)
@@ -85,7 +87,7 @@ async def queue_manager(ctx):
     queue_status = status.is_playing()
     if queue_status is False:
         await skip(ctx)
-      
+
     else:
         pass
 
@@ -111,6 +113,11 @@ async def leave(ctx):
     voice = ctx.voice_client
     await voice.disconnect()
 
+
 async def update_status(song):
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name={song}))
+    await client.change_presence(
+        status=discord.Status.online, activity=discord.Game(name={song})
+    )
+
+
 client.run(MUSIC_BOT_TOKEN)
