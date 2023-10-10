@@ -38,7 +38,7 @@ def add_song(song_title: str):
     song_queue.append({title: f"{video_link[-11:]}.mp3"})
 
 @client.command()
-async def play(ctx, url: str):
+async def play(ctx, *, url: str):
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="General")
     status = ctx.voice_client
     await ctx.message.delete()
