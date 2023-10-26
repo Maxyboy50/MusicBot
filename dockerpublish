@@ -1,5 +1,4 @@
 #!/bin/bash
-
 ACCOUNTID=$(aws sts get-caller-identity --query Account | tr -d '"')
 
 REPOSITORYURI=$(aws ecr describe-repositories --query "repositories[0].repositoryUri" | tr -d '"')
@@ -12,7 +11,7 @@ aws ecr get-login-password --region us-east-2 | docker login --username AWS --pa
 
 
 
-sudo docker build -t $REPOSITORYURI:latest .
+sudo docker build -t $REPOSITORYURI:latest --platform=linux/amd64 .
 
 
 

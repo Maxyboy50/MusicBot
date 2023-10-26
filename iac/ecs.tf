@@ -37,14 +37,14 @@ resource "aws_ecs_task_definition" "this" {
       logConfiguration : {
         "logDriver" : "awslogs"
         options : {
-          "awslogs-group" : "/ecs/MusicBot",
+          "awslogs-group" : "${aws_cloudwatch_log_group.this.name}",
           "awslogs-region" : "us-east-2",
           "awslogs-stream-prefix" : "ecs"
         }
   } }])
   runtime_platform {
     operating_system_family = "LINUX"
-    cpu_architecture = "X86_64"
+    cpu_architecture        = "X86_64"
   }
 }
 resource "aws_ecs_service" "willie_neal" {
@@ -54,9 +54,9 @@ resource "aws_ecs_service" "willie_neal" {
   desired_count   = 1
   depends_on      = [aws_iam_role.execution_role]
   network_configuration {
-    security_groups  = ["sg-07efeac40c79e8a1c"]
+    security_groups  = [aws_security_group.this.id]
     assign_public_ip = true
-    subnets          = ["subnet-096989484e460a3ba", "subnet-018a9c920ac2d8e86", "subnet-03ada96d0c0254536"]
+    subnets          = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
   }
 
 }
