@@ -24,19 +24,19 @@ resource "aws_ecs_task_definition" "this" {
   container_definitions = jsonencode([
     {
       name      = "musicbot"
-      image     = "912434042761.dkr.ecr.us-east-2.amazonaws.com/testrepo"
+      image     = data.aws_ecr_repository.this.repository_url
       cpu       = 1024
       memory    = 2048
       essential = true
-      environment : [
+      environment = [
         {
           "name" : "MUSIC_BOT_TOKEN",
           "value" : "${var.music_bot_token}"
         }
       ]
-      logConfiguration : {
+      logConfiguration = {
         "logDriver" : "awslogs"
-        options : {
+        options = {
           "awslogs-group" : "${aws_cloudwatch_log_group.this.name}",
           "awslogs-region" : "us-east-2",
           "awslogs-stream-prefix" : "ecs"
