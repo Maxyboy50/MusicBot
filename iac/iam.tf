@@ -18,17 +18,24 @@ data "aws_iam_policy_document" "task_policy_document" {
   statement {
     effect = "Allow"
     actions = ["ecs:ExecuteCommand",
-      "ecr:GetAuthorizationToken",
       "ecr:BatchCheckLayerAvailability",
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage",
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-    resources = [aws_cloudwatch_log_group.this.arn, data.aws_ecr_repository.this.arn]
+    resources = [aws_cloudwatch_log_group.this.arn,"${aws_cloudwatch_log_group.this.arn}:log-stream:ecs/musicbot/*", data.aws_ecr_repository.this.arn]
+  }
+  statement {
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
   }
 
 }
+
+
+
 resource "aws_iam_policy" "task_policy" {
   name        = "music_bot_policy"
   description = "Music Bot task policy to allow writes to cloud watch logs"
