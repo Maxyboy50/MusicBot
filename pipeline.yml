@@ -78,6 +78,8 @@ stages:
       env:
        AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
        AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+       BACKEND_BUCKET: $(Backend_Bucket)
+       TFSTATE_KEY: $(TFState_Key)
       workingDirectory: $(Pipeline.Workspace)/s/iac
 
     - bash: |
