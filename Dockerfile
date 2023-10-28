@@ -1,8 +1,8 @@
-FROM ubuntu:22.04
+FROM python:3.10-bullseye
 
 
 USER root
-RUN apt update && apt install -y python3.10 && apt install -y python3-pip && apt install -y ffmpeg
+RUN apt update && apt install -y ffmpeg
 
 ADD /src/requirements.txt /app_files/
 
