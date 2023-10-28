@@ -42,8 +42,7 @@ async def play_song(ctx, voice):
     song_title, song_info = next(iter(song.items()))
     print(song_title, song_info)
     voice.play(discord.FFmpegPCMAudio(song_info["mp3"]))
-    await ctx.send(f"Now Playing: {song_title}")
-    await ctx.send(song_info["link"])
+    await ctx.send(f"Now Playing: {song_title}\n{song_info['link']}")
     await update_status(song_title)
 
 
