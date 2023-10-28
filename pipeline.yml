@@ -36,19 +36,17 @@ stages:
         AWS_ACCESS_KEY_ID: $(AWSAccessKey)
       displayName: Login to ECR
     
-    - bash: |
-        REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
-        docker pull $REPOSITORY_URI:latest
-        docker images
-      env:
-        AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
-        AWS_ACCESS_KEY_ID: $(AWSAccessKey)
-      displayName: Pull latest image for build caching (if it exists)
-      continueOnError: true
+    # - bash: |
+    #     REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
+    #     docker pull $REPOSITORY_URI:latest
+    #   env:
+    #     AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+    #     AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+    #   displayName: Pull latest image for build caching (if it exists)
+    #   continueOnError: true
 
     - bash: |
         REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
-        docker images
         docker build  --platform=linux/amd64 --cache-from=$REPOSITORY_URI:latest -t $REPOSITORY_URI:latest .
         docker push $REPOSITORY_URI:latest
       
