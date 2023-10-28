@@ -95,5 +95,43 @@ stages:
       artifact: terraform_plan
       displayName: Publish terraform plan for consumption
 
+- stage: Deployment      
+  displayName: Deploy Terraform resources
+  jobs:
+  - job: Deploy
+    displayName: Deploy terraform plan
+    steps:
+    - download: current
+      artifact: terraform_plan
+
+    - task: AzureKeyVault@2
+      displayName: Retrieve AWS Credentials from Azure Key Vault
+      inputs:
+        azureSubscription: 'Azure RM Service Connection'
+        KeyVaultName: 'AWSCredentialsVault'
+        SecretsFilter: 'AWSAccessKey, AWSSecretKey'
+        RunAsPreJob: true
+    
+    - bash: |
+        terraform init \
+        -backend-config="bucket=$(BACKEND_BUCKET)" \
+        -backend-config="key=$(TFSTATE_KEY)" \
+        -backend-config="region=${{ variables.aws_region }}" 
+      displayName: Terraform init
+      env:
+       AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+       AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+       BACKEND_BUCKET: $(Backend_Bucket)
+       TFSTATE_KEY: $(TFState_Key)
+      workingDirectory: $(Pipeline.Workspace)/s/iac
+    
+    - bash: |
+        terraform apply $(Pipeline.Workspace)/terraform_plan/plan.json
+      displayName: Apply terraform plan
+      env:
+       AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+       AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+      workingDirectory: $(Pipeline.Workspace)/s/iac
       
+        
       
