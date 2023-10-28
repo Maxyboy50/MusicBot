@@ -40,24 +40,14 @@ stages:
 
         REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"')
         if [ -z "$REPOSITORY_URI"]; then
-          echo "Failed to retrieve repository uri"
-          exit 1
+          aws ecr create-repository --repository-name "${{ variables.ecr_repository_name }}"
+          REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"')
         fi
-
         echo "##vso[task.setvariable variable=repository_uri;]$REPOSITORY_URI"
       env:
         AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
         AWS_ACCESS_KEY_ID: $(AWSAccessKey)
-      displayName: Log ECR Repository Url
-
-    - bash: |
-        aws ecr create-repository --repository-name "${{ variables.ecr_repository_name }}"
-        echo "##vso[task.setvariable variable=repository_uri;]$REPOSITORY_URI"
-      env:
-        AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
-        AWS_ACCESS_KEY_ID: $(AWSAccessKey)
-      displayName: Create repository if it doesn't exist
-      condition: failed() 
+      displayName: Log ECR Repository Url (create if doesn't exist)
 
     - bash: |
         docker build  --platform=linux/amd64 -t $(repository_uri):latest .
