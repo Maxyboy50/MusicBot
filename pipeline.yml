@@ -57,6 +57,7 @@ stages:
       env:
         AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
         AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+      name: log_failure
       displayName: Log ECR Repository Url
       condition: failed()
     
@@ -69,6 +70,6 @@ stages:
         AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
         AWS_ACCESS_KEY_ID: $(AWSAccessKey)
       displayName: Build docker image and publish
-      condition: succeeded()
+      condition: succeeded(log_failure)
 
       
