@@ -3,7 +3,7 @@ trigger: none
 name: $(Build.DefinitionName)-$(Build.BuildId)
 
 stages:
-- stage: Pre-Deploy
+- stage: Pre_Deploy
   variables:
   - name: aws_region
     value: us-east-2
