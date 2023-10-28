@@ -87,6 +87,7 @@ stages:
        AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
        AWS_ACCESS_KEY_ID: $(AWSAccessKey)
        MUSIC_BOT_TOKEN: $(MusicBotToken)
+      workingDirectory: $(Pipeline.Workspace)/s/iac
     
     - publish: $(Build.ArtifactStagingDirectory)/plan.json
       artifact: terraform_plan
