@@ -37,7 +37,6 @@ stages:
 
     - bash: |
         aws ecr create-repository --repository-name "${{ variables.ecr_repository_name }}"
-        REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
       env:
         AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
         AWS_ACCESS_KEY_ID: $(AWSAccessKey)
@@ -54,7 +53,7 @@ stages:
     
 
     - bash: |
-        docker build  --platform=linux/amd64 -t $REPOSITORY_URI:latest .
+        docker build  --platform=linux/amd64 -t $(repository_uri):latest .
         docker push $(repository_uri):latest
       workingDirectory: $(Pipeline.Workspace)/s/
       env:
