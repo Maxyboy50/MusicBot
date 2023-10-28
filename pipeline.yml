@@ -38,7 +38,9 @@ stages:
     - bash: |
         aws ecr create-repository --repository-name "${{ variables.ecr_repository_name }}"
         REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
-        echo "##vso[task.setvariable variable=repository_uri;]$REPOSITORY_URI"
+      env:
+        AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+        AWS_ACCESS_KEY_ID: $(AWSAccessKey)
       displayName: Create repository if it doesn't exist
 
     - bash: |
