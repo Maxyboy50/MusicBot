@@ -29,8 +29,8 @@ stages:
     
 
     - bash: |
-        ACCOUNT_ID=$(aws sts get-caller-identity --query Account | tr -d '"')
-        REPOSITORY_URI = $(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
+        $ACCOUNT_ID=$(aws sts get-caller-identity --query Account | tr -d '"')
+        $REPOSITORY_URI =$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
         aws ecr get-login-password --region ${{ variables.aws_region }} | docker login --username AWS --password-stdin $ACCOUNTID.dkr.ecr.${{ variables.aws_region }}.amazonaws.com
 
         docker build -t $REPOSITORYURI:latest --platform=linux/amd64 .
