@@ -12,7 +12,7 @@ stages:
     displayName: Build Docker image
     variables:
     - name: ecr_repository_name
-      value: MusicBot
+      value: musicbot
     
     - name: aws_region
       value: us-east-2
