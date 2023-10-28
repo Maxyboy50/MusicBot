@@ -10,6 +10,12 @@ stages:
   jobs:
   - job: Build
     displayName: Build Docker image
+    variables:
+    - name: ecr_repository_name
+      value: testrepo
+    
+    - name: aws_region
+      value: us-east-2
     steps:
     - checkout: self
 
@@ -33,3 +39,8 @@ stages:
       
       displayName: Build docker image and publish
       workingDirectory: $(Pipeline.Workspace)/s/
+      env:
+        AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+        AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+
+      
