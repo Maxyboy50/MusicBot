@@ -2,11 +2,12 @@ trigger: none
 
 name: $(Build.DefinitionName)-$(Build.BuildId)
 
+variables:
+- name: aws_region
+  value: us-east-2
+
 stages:
 - stage: Pre_Deploy
-  variables:
-  - name: aws_region
-    value: us-east-2
 
   displayName: Build Docker image, publish, and produce terraform plan
   jobs:
