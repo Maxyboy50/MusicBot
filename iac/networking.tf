@@ -27,8 +27,8 @@ resource "aws_subnet" "this" {
 }
 
 resource "aws_security_group" "this" {
-  name        = "allow http traffic"
-  description = "Allow TLS inbound traffic"
+  name        = "Allow HTTP/s traffic"
+  description = "Allow HTTP/s inbound traffic"
   vpc_id      = aws_vpc.this.id
 
   ingress {
