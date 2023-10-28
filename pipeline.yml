@@ -8,7 +8,6 @@ variables:
 
 stages:
 - stage: Pre_Deploy
-
   displayName: Build Docker image, publish, and produce terraform plan
   jobs:
   - job: Build_Image
