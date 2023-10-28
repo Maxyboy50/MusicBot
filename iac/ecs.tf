@@ -56,11 +56,7 @@ resource "aws_ecs_service" "willie_neal" {
   network_configuration {
     security_groups  = [aws_security_group.this.id]
     assign_public_ip = true
-    subnets          = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
+    subnets          = [for k, v in aws_subnet.this : v.id]
   }
 
 }
-# task definition
-# - where networking is defined
-
-# ecs service
