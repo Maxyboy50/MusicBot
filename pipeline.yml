@@ -49,7 +49,7 @@ stages:
     - bash: |
         REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
         docker images
-        docker build -t $REPOSITORY_URI:latest --platform=linux/amd64 .
+        docker build  --platform=linux/amd64 --cache-from=$REPOSITORY_URI:latest -t $REPOSITORY_URI:latest .
         docker push $REPOSITORY_URI:latest
       
       displayName: Build docker image and publish
