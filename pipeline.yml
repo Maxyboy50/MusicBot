@@ -76,17 +76,17 @@ stages:
         -backend-config="region=${{ variables.aws_region }}" 
       displayName: Terraform init
       env:
-      - AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
-      - AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+       AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+       AWS_ACCESS_KEY_ID: $(AWSAccessKey)
       workingDirectory: $(Pipeline.Workspace)/s/iac
 
     - bash: |
         terraform plan --var music_bot_token=$(MUSIC_BOT_TOKEN) --out $(Build.ArtifactStagingDirectory)/plan.json
       displayName: Produce terraform plan
       env:
-      - AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
-      - AWS_ACCESS_KEY_ID: $(AWSAccessKey)
-      - MUSIC_BOT_TOKEN: $(MusicBotToken)
+       AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+       AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+       MUSIC_BOT_TOKEN: $(MusicBotToken)
     
     - publish: $(Build.ArtifactStagingDirectory)/plan.json
       artifact: terraform_plan
