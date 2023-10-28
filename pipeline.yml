@@ -96,6 +96,7 @@ stages:
       displayName: Publish terraform plan for consumption
 
 - stage: Deployment      
+  dependsOn: Pre_Deploy
   displayName: Deploy Terraform resources
   jobs:
   - job: Deploy
