@@ -3,18 +3,18 @@ trigger: none
 name: $(Build.DefinitionName)-$(Build.BuildId)
 
 stages:
-- stage: Build
-  displayName: Build Docker image and publish
+- stage: Pre-Deploy
+  variables:
+  - name: aws_region
+    value: us-east-2
+
+  displayName: Build Docker image, publish, and produce terraform plan
   jobs:
-  - job: Build
+  - job: Build_Image
     displayName: Build Docker image
     variables:
     - name: ecr_repository_name
       value: musicbot
-    
-    - name: aws_region
-      value: us-east-2
-
     steps:
     - checkout: self
 
@@ -36,13 +36,12 @@ stages:
       displayName: Login to ECR
 
     - bash: |
-        set -e
-
         REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"')
         if [ -z "$REPOSITORY_URI"]; then
           aws ecr create-repository --repository-name "${{ variables.ecr_repository_name }}"
           REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"')
         fi
+
         echo "##vso[task.setvariable variable=repository_uri;]$REPOSITORY_URI"
       env:
         AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
@@ -58,4 +57,40 @@ stages:
         AWS_ACCESS_KEY_ID: $(AWSAccessKey)
       displayName: Build docker image and publish
 
+  - job: Plan
+    displayName: Create terraform plan
+    steps:
+    - checkout: self
+
+    - task: AzureKeyVault@2
+      displayName: Retrieve AWS Credentials from Azure Key Vault
+      inputs:
+        azureSubscription: 'Azure RM Service Connection'
+        KeyVaultName: 'AWSCredentialsVault'
+        SecretsFilter: 'AWSAccessKey, AWSSecretKey'
+        RunAsPreJob: true
+    - bash: |
+        terraform init \
+        -backend-config="bucket=$(BACKEND_BUCKET)" \
+        -backend-config="key=$(TFSTATE_KEY)" \
+        -backend-config="region=${{ variables.aws_region }}" 
+      displayName: Terraform init
+      env:
+      - AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+      - AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+      workingDirectory: $(Pipeline.Workspace)/s/iac
+
+    - bash: |
+        terraform plan --var music_bot_token=$(MUSIC_BOT_TOKEN) --out $(Build.ArtifactStagingDirectory)/plan.json
+      displayName: Produce terraform plan
+      env:
+      - AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+      - AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+      - MUSIC_BOT_TOKEN: $(MusicBotToken)
+    
+    - publish: $(Build.ArtifactStagingDirectory)/plan.json
+      artifact: terraform_plan
+      displayName: Publish terraform plan for consumption
+
+      
       
