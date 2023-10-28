@@ -28,13 +28,13 @@ stages:
         RunAsPreJob: true
     
 
-    # - bash: |
-    #     ACCOUNT_ID=$(aws sts get-caller-identity --query Account | tr -d '"')
-    #     aws ecr get-login-password --region ${{ variables.aws_region }} | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.${{ variables.aws_region }}.amazonaws.com
-    #   env:
-    #     AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
-    #     AWS_ACCESS_KEY_ID: $(AWSAccessKey)
-    #   displayName: Login to ECR
+    - bash: |
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account | tr -d '"')
+        aws ecr get-login-password --region ${{ variables.aws_region }} | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.${{ variables.aws_region }}.amazonaws.com
+      env:
+        AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+        AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+      displayName: Login to ECR
     
     - bash: |
         REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
