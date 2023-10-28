@@ -12,8 +12,24 @@ stages:
     displayName: Build Docker image
     steps:
     - checkout: self
+
+    - task: AzureKeyVault@2
+      displayName: Retrieve AWS Credentials from Azure Key Vault
+      inputs:
+        azureSubscription: 'Azure RM Service Connection'
+        KeyVaultName: 'AWSCredentialsVault'
+        SecretsFilter: 'AWSAccessKey, AWSSecretKey'
+        RunAsPreJob: true
     
 
     - bash: |
-        
-        docker build -t 
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account | tr -d '"')
+        REPOSITORY_URI = $(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"') 
+        aws ecr get-login-password --region ${{ variables.aws_region }} | docker login --username AWS --password-stdin $ACCOUNTID.dkr.ecr.${{ variables.aws_region }}.amazonaws.com
+
+        docker build -t $REPOSITORYURI:latest --platform=linux/amd64 .
+
+        docker push $REPOSITORYURI:latest
+      
+      displayName: Build docker image and publish
+      workingDirectory: $(Pipeline.Workspace)/s/
