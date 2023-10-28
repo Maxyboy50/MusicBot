@@ -1,0 +1,19 @@
+trigger: none
+
+name: $(Build.DefinitionName)-$(Build.BuildId)
+
+# What should the order be?
+# Can't publish to a non-existent repository, may have to create manually? Or maybe with the aws cli
+stages:
+- stage: Build
+  displayName: Build Docker image and publish
+  jobs:
+  - job: Build
+    displayName: Build Docker image
+    steps:
+    - checkout: self
+    
+
+    - bash: |
+        
+        docker build -t 
