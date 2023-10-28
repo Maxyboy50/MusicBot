@@ -36,7 +36,14 @@ stages:
       displayName: Login to ECR
 
     - bash: |
+        set -e
+
         REPOSITORY_URI=$(aws ecr describe-repositories --repository-names "${{ variables.ecr_repository_name }}" --query "repositories[0].repositoryUri" | tr -d '"')
+        if [ -z "$REPOSITORY_URI"]; then
+          echo "Failed to retrieve repository uri"
+          exit 1
+        fi
+
         echo "##vso[task.setvariable variable=repository_uri;]$REPOSITORY_URI"
       env:
         AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
