@@ -16,7 +16,7 @@ stages:
     - name: ecr_repository_name
       value: musicbot
     
-    - group: MusicBotGroup
+    - group: 'MusicBotGroup'
 
     steps:
     - checkout: self
@@ -86,7 +86,7 @@ stages:
       workingDirectory: $(Pipeline.Workspace)/s/iac
 
     - bash: |
-        echo $(music_bot_token)
+        echo $(MUSIC_BOT_TOKEN)
         terraform plan --var music_bot_token=$(music_bot_token) --out $(Build.ArtifactStagingDirectory)/plan.json
       displayName: Produce terraform plan
       # env:
