@@ -19,6 +19,6 @@ steps:
 
 - bash: |
     echo $(MUSIC_BOT_TOKEN) environment
-  displayName: 'Run a multi-line script
+  displayName: 'Run a multi-line script'
   env:
     MUSIC_BOT_TOKEN: $(music_bot_token)
