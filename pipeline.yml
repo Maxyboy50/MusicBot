@@ -15,6 +15,9 @@ stages:
     variables:
     - name: ecr_repository_name
       value: musicbot
+    
+    - group: MusicBotGroup
+
     steps:
     - checkout: self
 
@@ -88,7 +91,6 @@ stages:
       env:
        AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
        AWS_ACCESS_KEY_ID: $(AWSAccessKey)
-       MUSIC_BOT_TOKEN: $(MusicBotToken)
       workingDirectory: $(Pipeline.Workspace)/s/iac
     
     - publish: $(Build.ArtifactStagingDirectory)/plan.json
