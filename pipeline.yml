@@ -15,8 +15,6 @@ stages:
     variables:
     - name: ecr_repository_name
       value: musicbot
-    
-    - group: 'MusicBotGroup'
 
     steps:
     - checkout: self
@@ -62,6 +60,8 @@ stages:
 
   - job: Plan
     displayName: Create terraform plan
+    variables:
+    - group: 'MusicBotGroup'
     steps:
     - checkout: self
 
@@ -85,16 +85,11 @@ stages:
        TFSTATE_KEY: $(TFState_Key)
       workingDirectory: $(Pipeline.Workspace)/s/iac
     - bash: |
-        echo $(MUSIC_BOT_TOKEN)
-        echo $(music_bot_token)
-    - bash: |
-        echo $(MUSIC_BOT_TOKEN)
         terraform plan --var music_bot_token=$(music_bot_token) --out $(Build.ArtifactStagingDirectory)/plan.json
       displayName: Produce terraform plan
-      # env:
-      # #  MUSIC_BOT_TOKEN: $(MUSICBOTTOKEN)
-      #  AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
-      #  AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+      env:
+       AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+       AWS_ACCESS_KEY_ID: $(AWSAccessKey)
       workingDirectory: $(Pipeline.Workspace)/s/iac
     
     - publish: $(Build.ArtifactStagingDirectory)/plan.json
