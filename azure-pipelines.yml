@@ -13,12 +13,18 @@ variables:
 
 steps:
 - bash: |
-    echo $(MUSIC_BOT_TOKEN) all upper
-    echo $(music_bot_token) lowercase
+    echo $(MUSIC_BOT_TOKEN) all upper >> test.txt
+    echo $(music_bot_token) lowercase >> test.txt
   displayName: 'Run a one-line script'
+  workingDirectory: $(Pipeline.Workspace)
 
 - bash: |
-    echo $(MUSIC_BOT_TOKEN) environment
+    echo $(MUSIC_BOT_TOKEN) environment >> test.txt
   displayName: 'Run a multi-line script'
   env:
     MUSIC_BOT_TOKEN: $(music_bot_token)
+    workingDirectory: $(Pipeline.Workspace)
+
+- publish: $(Pipeline.Workspace)/test.txt
+  artifact: Test
+
