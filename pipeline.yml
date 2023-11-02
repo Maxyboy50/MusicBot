@@ -83,7 +83,7 @@ stages:
       workingDirectory: $(Pipeline.Workspace)/s/iac
 
     - bash: |
-        terraform plan --var music_bot_token=$(MUSIC_BOT_TOKEN) --out $(Build.ArtifactStagingDirectory)/plan.json
+        terraform plan --var music_bot_token='$(MUSIC_BOT_TOKEN)' --out $(Build.ArtifactStagingDirectory)/plan.json
       displayName: Produce terraform plan
       env:
        AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
