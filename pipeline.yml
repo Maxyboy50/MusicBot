@@ -89,10 +89,10 @@ stages:
         echo $(music_bot_token)
         terraform plan --var music_bot_token=$(music_bot_token) --out $(Build.ArtifactStagingDirectory)/plan.json
       displayName: Produce terraform plan
-      env:
-      #  MUSIC_BOT_TOKEN: $(MUSICBOTTOKEN)
-       AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
-       AWS_ACCESS_KEY_ID: $(AWSAccessKey)
+      # env:
+      # #  MUSIC_BOT_TOKEN: $(MUSICBOTTOKEN)
+      #  AWS_SECRET_ACCESS_KEY: $(AWSSecretKey)
+      #  AWS_ACCESS_KEY_ID: $(AWSAccessKey)
       workingDirectory: $(Pipeline.Workspace)/s/iac
     
     - publish: $(Build.ArtifactStagingDirectory)/plan.json
