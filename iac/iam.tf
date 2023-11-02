@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "task_policy_document" {
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-    resources = [aws_cloudwatch_log_group.this.arn,"${aws_cloudwatch_log_group.this.arn}:log-stream:ecs/musicbot/*", data.aws_ecr_repository.this.arn]
+    resources = [aws_cloudwatch_log_group.this.arn, "${aws_cloudwatch_log_group.this.arn}:log-stream:ecs/musicbot/*", data.aws_ecr_repository.this.arn]
   }
   statement {
     effect    = "Allow"
