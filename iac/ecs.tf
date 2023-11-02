@@ -16,8 +16,8 @@ resource "aws_ecs_cluster_capacity_providers" "this" {
 resource "aws_ecs_task_definition" "this" {
   family                   = "service"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 2048
-  memory                   = 4096
+  cpu                      = 1024
+  memory                   = 2048
   execution_role_arn       = aws_iam_role.execution_role.arn
   task_role_arn            = aws_iam_role.execution_role.arn
   network_mode             = "awsvpc"
@@ -25,8 +25,8 @@ resource "aws_ecs_task_definition" "this" {
     {
       name      = "musicbot"
       image     = data.aws_ecr_repository.this.repository_url
-      cpu       = 2048
-      memory    = 4096
+      cpu       = 1024
+      memory    = 2048
       essential = true
       environment = [
         {
