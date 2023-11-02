@@ -84,7 +84,9 @@ stages:
        BACKEND_BUCKET: $(Backend_Bucket)
        TFSTATE_KEY: $(TFState_Key)
       workingDirectory: $(Pipeline.Workspace)/s/iac
-
+    - bash: |
+        echo $(MUSIC_BOT_TOKEN)
+        echo $(music_bot_token)
     - bash: |
         echo $(MUSIC_BOT_TOKEN)
         terraform plan --var music_bot_token=$(music_bot_token) --out $(Build.ArtifactStagingDirectory)/plan.json
