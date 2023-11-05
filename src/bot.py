@@ -97,11 +97,15 @@ async def queue(ctx):
 @tasks.loop(seconds=5)
 async def queue_manager(ctx):
     voice = ctx.voice_client
-    queue_status = voice.is_playing()
-    if queue_status is False:
-        await skip(ctx)
-    else:
-        pass
+    song_is_playing = voice.is_playing()
+    if song_is_playing is False:
+        if len(song_queue) > 0:
+            try:
+                await play_song(ctx=ctx, voice=voice)
+            except discord.errors.ClientException:
+                pass
+        else:
+          pass
 
 
 @client.command()
@@ -116,7 +120,6 @@ async def skip(ctx):
             pass
     else:
         await ctx.send("The queue is empty.")
-        queue_manager.stop()
 
 
 @client.command()
