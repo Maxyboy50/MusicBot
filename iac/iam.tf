@@ -46,9 +46,4 @@ resource "aws_iam_role_policy_attachment" "this" {
   role       = aws_iam_role.execution_role.name
   policy_arn = aws_iam_policy.task_policy.arn
 }
-# ecs execution role
-
-
-# ecs task role
-#   - cloudwatch logs
 
