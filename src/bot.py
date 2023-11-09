@@ -97,15 +97,19 @@ async def queue(ctx):
 @tasks.loop(seconds=5)
 async def queue_manager(ctx):
     voice = ctx.voice_client
-    song_is_playing = voice.is_playing()
-    if song_is_playing is False:
-        if len(song_queue) > 0:
-            try:
-                await play_song(ctx=ctx, voice=voice)
-            except discord.errors.ClientException:
+    try:
+        song_is_playing = voice.is_playing()
+        if song_is_playing is False:
+            if len(song_queue) > 0:
+                try:
+                    await play_song(ctx=ctx, voice=voice)
+                except discord.errors.ClientException:
+                    pass
+            elif len(song_queue) <= 0:
                 pass
-        else:
-          pass
+    except AttributeError:
+        pass
+
 
 
 @client.command()
