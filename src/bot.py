@@ -72,12 +72,14 @@ async def play(ctx, *, url: str):
 
 @client.command()
 async def pause(ctx):
+    await ctx.message.delete()
     voice = ctx.voice_client
     voice.pause()
 
 
 @client.command()
 async def resume(ctx):
+    await ctx.message.delete()
     voice = ctx.voice_client
     voice.resume()
 
@@ -92,6 +94,7 @@ async def queue(ctx):
                 await ctx.send(f"Title: {song_title}")
     except IndexError:
         await ctx.send("The queue is empty!")
+    await ctx.message.delete()
 
 
 @tasks.loop(seconds=5)
@@ -114,6 +117,7 @@ async def queue_manager(ctx):
 
 @client.command()
 async def skip(ctx):
+    await ctx.message.delete()
     voice = ctx.voice_client
     voice.stop()
 
@@ -128,6 +132,7 @@ async def skip(ctx):
 
 @client.command()
 async def leave(ctx):
+    await ctx.message.delete()
     voice = ctx.voice_client
     await voice.disconnect()
 
