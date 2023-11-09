@@ -128,7 +128,6 @@ async def skip(ctx):
 
 @client.command()
 async def leave(ctx):
-    ##Run a recurring task that will disconnect the bot if nothing is playing
     voice = ctx.voice_client
     await voice.disconnect()
 
