@@ -109,7 +109,6 @@ async def queue_manager(ctx):
                 except discord.errors.ClientException:
                     pass
             elif len(song_queue) <= 0:
-                pass
                 queue_manager.stop(ctx)
     except AttributeError:
         pass
