@@ -110,6 +110,8 @@ async def queue_manager(ctx):
                     pass
             elif len(song_queue) <= 0:
                 queue_manager.stop(ctx)
+        else:
+          pass
     except AttributeError:
         pass
 
