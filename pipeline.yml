@@ -1,5 +1,6 @@
 trigger: none
 
+
 name: $(Build.DefinitionName)-$(Build.BuildId)
 
 variables:
@@ -18,7 +19,7 @@ stages:
 
     steps:
     - checkout: self
-
+    
     - task: AzureKeyVault@2
       displayName: Retrieve AWS Credentials from Azure Key Vault
       inputs:
@@ -72,6 +73,11 @@ stages:
         KeyVaultName: 'AWSCredentialsVault'
         SecretsFilter: 'AWSAccessKey, AWSSecretKey'
         RunAsPreJob: true
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+      displayName: Install latest version of terraform
+
     - bash: |
         terraform init \
         -backend-config="bucket=$(BACKEND_BUCKET)" \
@@ -113,6 +119,10 @@ stages:
         KeyVaultName: 'AWSCredentialsVault'
         SecretsFilter: 'AWSAccessKey, AWSSecretKey'
         RunAsPreJob: true
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+      displayName: Install latest version of terraform
     
     - bash: |
         terraform init \
