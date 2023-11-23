@@ -53,16 +53,15 @@ async def play(ctx, *, url: str):
     video_link = search_song(url)
     await ctx.message.delete()
     add_song(song_title=video_link)
-    if status is False or status is None:
+    if status.is_playing() is True:
+        await ctx.send("Your song has been added to the queue!")
+    elif status is False or status is None:
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         try:
             await play_song(ctx=ctx, voice=voice)
         except discord.errors.ClientException:
             pass
-
-    elif status.is_playing() is True:
-        await ctx.send("Adding your song to the queue!")
 
     try:
         queue_manager.start(ctx)
